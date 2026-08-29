@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/TopicService/">
+    <Project Path="TopicService/TopicService.API/TopicService.API.csproj" />
+    <Project Path="TopicService/TopicService.Application/TopicService.Application.csproj" />
+    <Project Path="TopicService/TopicService.Domain/TopicService.Domain.csproj" />
+    <Project Path="TopicService/TopicService.Infrastructure/TopicService.Infrastructure.csproj" />
+  </Folder>
+</Solution>
