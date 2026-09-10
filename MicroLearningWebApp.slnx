@@ -1,8 +1,21 @@
 <Solution>
+  <Folder Name="/IdentityService/">
+    <Project Path="IdentityService/IdentityService.API/IdentityService.API.csproj" />
+    <Project Path="IdentityService/IdentityService.Application/IdentityService.Application.csproj" />
+    <Project Path="IdentityService/IdentityService.Domain/IdentityService.Domain.csproj" />
+    <Project Path="IdentityService/IdentityService.Infrastructure/IdentityService.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/PostService/">
+    <Project Path="Application/PostService.Application/PostService.Application.csproj" Id="be587593-6cbd-4f1d-b88a-fcd91e0c19c0" />
+    <Project Path="PostService/PostService.API/PostService.API.csproj" Id="ec45e33f-8aa5-4fce-9134-8af6c696c38a" />
+    <Project Path="PostService/PostService.Domain/PostService.Domain.csproj" Id="598b551d-e80e-4235-9ae6-7fffd26107d6" />
+    <Project Path="PostService/PostService.Infrastructure/PostService.Infrastructure.csproj" Id="60d130ff-41db-418a-a109-0f381e20ac42" />
+  </Folder>
   <Folder Name="/TopicService/">
     <Project Path="TopicService/TopicService.API/TopicService.API.csproj" />
     <Project Path="TopicService/TopicService.Application/TopicService.Application.csproj" />
     <Project Path="TopicService/TopicService.Domain/TopicService.Domain.csproj" />
     <Project Path="TopicService/TopicService.Infrastructure/TopicService.Infrastructure.csproj" />
   </Folder>
+  <Project Path="ApiGateway/ApiGateway.csproj" Id="93dfd591-1782-44fb-874f-a394cfd056ee" />
 </Solution>
