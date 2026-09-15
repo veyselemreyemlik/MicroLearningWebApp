@@ -1,31 +1,41 @@
-using TopicService.Infrastructure;
-using TopicService.Application.Features.Topics.Commands.CreateTopic;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1. Controller desteğini ekliyoruz
+// --- DİĞER SERVİSLER (MediatR, Controllers vb. buralarda olur) ---
 builder.Services.AddControllers();
+// builder.Services.AddMediatR(...);
 
-// 2. Swagger/OpenAPI yapılandırması
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+// --- BURAYA YAPIŞTIRIYORSUN (app = builder.Build() satırından ÖNCE) ---
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidAudience = builder.Configuration["Jwt:Audience"],
+            // İŞTE DÜZELTİLEN SATIR BURASI (Key yerine SecretKey yazıyor):
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:SecretKey"]))
+        };
+    });
 
-// 3. Infrastructure katmanında yazdığımız kayıt metodunu çağırıyoruz
-builder.Services.AddInfrastructureServices(builder.Configuration);
+builder.Services.AddAuthorization();
+// -------------------------------------------------------------------
 
-// 4. MediatR'ı Application katmanındaki bir sınıf üzerinden (Assembly) kaydediyoruz
-builder.Services.AddMediatR(cfg =>
-    cfg.RegisterServicesFromAssembly(typeof(CreateTopicCommand).Assembly));
-
+// BÜYÜK SATIR: Builder işini bitirdi, uygulama ayağa kalkıyor
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-
+// --- MİDDLEWARE KISMI ---
+// DİKKAT: Bu iki satırı da eklemeyi unutma ve sıralaması tam böyle olsun!
+app.UseAuthentication();
 app.UseAuthorization();
+
 app.MapControllers();
 
 app.Run();
