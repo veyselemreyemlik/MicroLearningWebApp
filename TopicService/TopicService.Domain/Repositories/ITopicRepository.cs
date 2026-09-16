@@ -9,9 +9,8 @@ namespace TopicService.Domain.Repositories
 {
     public interface ITopicRepository
     {
-        Task<DailyTopic> GetByIdAsync(Guid id);
-        Task<DailyTopic> GetTopicByDateAsync(DateTime targetDate);
+        Task<DailyTopic?> GetTopicByDateAsync(DateTime targetDate);
+        Task<DailyTopic?> GetRandomTopicAsync(); // YENİ EKLENEN
         Task AddAsync(DailyTopic topic);
-
     }
 }

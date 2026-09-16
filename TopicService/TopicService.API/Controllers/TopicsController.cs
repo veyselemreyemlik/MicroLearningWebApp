@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Threading.Tasks;
 using MediatR;
-using Microsoft.AspNetCore.Authorization; // [Authorize] için gerekli kütüphane
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TopicService.Application.Features.Topics.Commands.CreateTopic;
-using TopicService.Application.Features.Topics.Queries.GetTopicByDate;
+using TopicService.Application.Features.Topics.Queries.GetRandomTopic;
 
 namespace TopicService.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize] // 1. EKLENEN: Sadece giriş yapmış (Token'ı olan) kullanıcılar okuyabilsin
+    [Authorize] // Sadece giriş yapmış (Token sahibi) kullanıcılar erişebilir
     public class TopicsController : ControllerBase
     {
         private readonly IMediator _mediator;
@@ -21,31 +21,28 @@ namespace TopicService.API.Controllers
         }
 
         // POST: api/topics
-        // n8n'in gece 00:00'da tetikleyip konu göndereceği uç nokta
+        // Gece otomasyonunun/workflow'un konu havuzuna veri basacağı uç nokta
         [HttpPost]
-        [AllowAnonymous] // 3. EKLENEN: n8n şimdilik JWT token olmadan da veri basabilsin
+        [AllowAnonymous] // Servisler arası tetiklemeler için token zorunluluğu olmadan açık
         public async Task<IActionResult> CreateTopic([FromBody] CreateTopicCommand command)
         {
             var topicId = await _mediator.Send(command);
-            return Ok(new { Id = topicId, Message = "Günün konusu başarıyla oluşturuldu." });
+            return Ok(new { Id = topicId, Message = "Konu havuzuna yeni konu başarıyla eklendi." });
         }
 
         // GET: api/topics/daily
-        // Next.js (Önyüz) veya Gateway'den günün konusunu çekmek için kullanılacak uç nokta
-        [HttpGet("daily")] // 2. GÜNCELLENEN: Frontend ile uyumlu olması için "today" yerine "daily" yapıldı
+        // Frontend'in rastgele konu çekmek için çağıracağı uç nokta
+        [HttpGet("daily")]
         public async Task<IActionResult> GetDailyTopic()
         {
-            var query = new GetTopicByDateQuery { TargetDate = DateTime.UtcNow.Date };
+            var query = new GetRandomTopicQuery();
             var topic = await _mediator.Send(query);
 
             if (topic == null)
             {
-                // Frontend'in hata mesajını okuyabilmesi için JSON formatında dönüyoruz
-                return NotFound(new { message = "Bugün için henüz bir konu üretilmemiş." });
+                return NotFound(new { message = "Konu havuzunda kayıtlı konu bulunamadı." });
             }
 
-            // DİKKAT: Frontend'deki setDailyTopic(data.title) kısmının çalışması için
-            // MediatR'dan dönen 'topic' modelinin içinde 'Title' isimli bir property olması gerekiyor!
             return Ok(topic);
         }
     }
