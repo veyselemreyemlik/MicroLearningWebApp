@@ -33,6 +33,12 @@ namespace PostService.API.Controllers
             // Güvenlik: Command'in UserId'sini API katmanında biz belirliyoruz
             command.UserId = Guid.Parse(userIdString);
 
+            // YENİ EKLENEN KONTROL: Frontend TopicId göndermezse 500 patlamasın, 400 fırlatsın!
+            if (command.TopicId == Guid.Empty)
+            {
+                return BadRequest(new { Message = "HATA: Frontend'den TopicId (Konu ID) eksik gönderildi!" });
+            }
+
             var postId = await _mediator.Send(command);
             return Ok(new { PostId = postId, Message = "İçerik başarıyla eklendi." });
         }

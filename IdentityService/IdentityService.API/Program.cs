@@ -7,6 +7,18 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// YENİ EKLENEN KISIM: CORS Politikasını tanımlıyoruz (Next.js'e kapıyı açıyoruz)
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowNextJs", policy =>
+    {
+        policy.WithOrigins("http://localhost:3000") // Next.js'in adresi
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials();
+    });
+});
+
 // 1. Infrastructure (Altyapı) Bağımlılıklarını ekliyoruz (Veritabanı, BCrypt, JWT)
 builder.Services.AddInfrastructureServices(builder.Configuration);
 
@@ -21,6 +33,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+// YENİ EKLENEN KISIM: CORS Middleware'i (Sırası çok önemli, Authorization'dan önce olmalı!)
+app.UseCors("AllowNextJs");
+
 // Global Hata Yakalayıcı (Middleware)
 app.Use(async (context, next) =>
 {
@@ -39,5 +55,4 @@ app.Use(async (context, next) =>
 
 app.UseAuthorization();
 app.MapControllers();
-
 app.Run();
