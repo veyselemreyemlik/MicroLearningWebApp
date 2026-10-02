@@ -8,6 +8,7 @@ namespace PostService.Domain.Repositories
     public interface IPostRepository
     {
         Task AddAsync(UserPost post);
-        Task<IEnumerable<UserPost>> GetPostsByTopicIdAsync(Guid topicId);
+        Task<IReadOnlyList<UserPost>> GetPostsByTopicIdAsync(Guid topicId);
+        Task<IReadOnlyList<UserPost>> GetPostsByUserIdAsync(Guid userId);
     }
 }

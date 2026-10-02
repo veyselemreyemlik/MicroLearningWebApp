@@ -1,11 +1,12 @@
-﻿using System;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using MediatR;
+﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PostService.Application.Features.Posts.Commands.CreatePost;
+using PostService.Application.Features.Posts.Queries.GetMyPosts;
 using PostService.Application.Features.Posts.Queries.GetPostsByTopic;
+using System;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace PostService.API.Controllers
 {
@@ -50,6 +51,19 @@ namespace PostService.API.Controllers
             var query = new GetPostsByTopicQuery { TopicId = topicId };
             var posts = await _mediator.Send(query);
             return Ok(posts);
+        }
+
+        [Authorize]
+        [HttpGet("my-notes")]
+        public async Task<IActionResult> GetMyNotes()
+        {
+            var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userIdString)) return Unauthorized("Geçersiz token bilgisi.");
+
+            var query = new GetMyPostsQuery { UserId = Guid.Parse(userIdString) };
+            var notes = await _mediator.Send(query);
+
+            return Ok(notes);
         }
     }
 }
